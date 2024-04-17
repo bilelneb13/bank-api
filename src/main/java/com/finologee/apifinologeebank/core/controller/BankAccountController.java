@@ -1,22 +1,19 @@
 package com.finologee.apifinologeebank.core.controller;
 
 import com.finologee.apifinologeebank.core.model.BankAccount;
-import com.finologee.apifinologeebank.core.model.User;
 import com.finologee.apifinologeebank.core.service.BankAccountService;
 import com.finologee.apifinologeebank.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping (path = "${base_url}/accounts")
+@RequestMapping(path = "${base_url}/accounts")
 @RequiredArgsConstructor
 public class BankAccountController {
 
@@ -24,19 +21,13 @@ public class BankAccountController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<BankAccount>> getAllBankAccounts() {
+    public ResponseEntity<Set<BankAccount>> getAllBankAccounts() {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        List<BankAccount> accounts = bankAccountService.getBankAccountsByUsername(authenticatedUsername);
+        Set<BankAccount> accounts = bankAccountService.getBankAccountsByUsername(authenticatedUsername);
         return ResponseEntity.ok(accounts);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BankAccount> getBankAccountById(@PathVariable UUID id) {
-        Optional<BankAccount> optionalUser = bankAccountService.getBankAccountById(id);
-        return optionalUser.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     @PostMapping
     public ResponseEntity<BankAccount> createBankAccount(@RequestBody BankAccount bankAccount) {

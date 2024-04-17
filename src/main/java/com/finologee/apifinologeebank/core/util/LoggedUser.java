@@ -1,20 +1,23 @@
 package com.finologee.apifinologeebank.core.util;
 
-import com.finologee.apifinologeebank.core.config.UserManagerConfig;
 import com.finologee.apifinologeebank.core.exception.NotFoundException;
 import com.finologee.apifinologeebank.core.model.BankAccount;
 import com.finologee.apifinologeebank.core.model.User;
+import com.finologee.apifinologeebank.core.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 @RequiredArgsConstructor
+@Service
 public class LoggedUser {
-    static UserManagerConfig userManagerConfig;
+    private final UserService userService;
+
     public static String getAccountNumber() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -26,16 +29,16 @@ public class LoggedUser {
         }
         throw new NotFoundException("Account number not found in Security Context.");
     }
-    public static List<BankAccount> getLoggedAccounts() {
+
+    public Set<BankAccount> getLoggedAccounts() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-
-            if (principal instanceof User user) {
-                User userDetails = (User) userManagerConfig.loadUserByUsername(user.getUsername());
-                return user.getBankAccounts();
-            }
+            Optional<User> userDetails = userService.getUserByUsername(authentication.getName());
+            if (userDetails.isPresent())
+                return userDetails.get().getBankAccounts();
+            throw new NotFoundException("User not found ...");
         }
+
         throw new NotFoundException("Account number not found in Security Context.");
     }
 }

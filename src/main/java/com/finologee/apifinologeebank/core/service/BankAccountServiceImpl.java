@@ -3,24 +3,25 @@ package com.finologee.apifinologeebank.core.service;
 import com.finologee.apifinologeebank.core.model.BankAccount;
 import com.finologee.apifinologeebank.core.model.User;
 import com.finologee.apifinologeebank.core.repository.BankAccountRepository;
-import com.finologee.apifinologeebank.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BankAccountServiceImpl implements BankAccountService{
+public class BankAccountServiceImpl implements BankAccountService {
     private final BankAccountRepository bankAccountRepository;
     private final UserService userService;
 
+
+
     @Override
-    public Optional<BankAccount> getBankAccountById(UUID id) {
-        return bankAccountRepository.findById(id);
+    public Optional<BankAccount> getBankAccountByAccountNumber(String accNumber) {
+        return bankAccountRepository.findByAccountNumber(accNumber);
     }
 
     @Override
@@ -31,8 +32,8 @@ public class BankAccountServiceImpl implements BankAccountService{
     @Override
     public BankAccount updateBankAccount(UUID id, BankAccount bankAccount) {
         BankAccount existingBankAccount = bankAccountRepository.findById(id)
-                //todo change exception
-                .orElseThrow(() -> new RuntimeException("BankAccount not found"));
+                                                               //todo change exception
+                                                               .orElseThrow(() -> new RuntimeException("BankAccount not found"));
         BeanUtils.copyProperties(bankAccount, existingBankAccount);
         return bankAccountRepository.save(existingBankAccount);
     }
@@ -42,13 +43,13 @@ public class BankAccountServiceImpl implements BankAccountService{
         bankAccountRepository.deleteById(id);
     }
 
-    @Override
-    public List<BankAccount> getAllBankAccounts() {
+/*    @Override
+    public Set<BankAccount> getAllBankAccounts() {
         return bankAccountRepository.findAll();
-    }
+    }*/
 
     @Override
-    public List<BankAccount> getBankAccountsByUsername(String authenticatedUsername) {
+    public Set<BankAccount> getBankAccountsByUsername(String authenticatedUsername) {
         // Find the user by username
         Optional<User> userOptional = userService.getUserByUsername(authenticatedUsername);
 

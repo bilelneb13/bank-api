@@ -17,5 +17,5 @@ public interface PaymentService {
 
     void deletePayment(UUID id);
 
-    List<Payment> getAllPayments();
+    List<PaymentDto> getAllUserPayments(int page, int size);
 }

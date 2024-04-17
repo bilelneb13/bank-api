@@ -13,20 +13,26 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PaymentServiceImpl implements PaymentService{
-    @Autowired
+public class PaymentServiceImpl implements PaymentService {
+
     private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
+    private final LoggedUser loggedUser;
+    private final BalanceService balanceService;
+    private final BankAccountService bankAccountService;
 
     @Override
     public Optional<Payment> getPaymentById(UUID id) {
@@ -34,43 +40,83 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     @Override
-    @Transactional
+    @Transactional(dontRollbackOn = {BlockedPaymentException.class})
     public PaymentDto createPayment(PaymentDto payment) {
         //validate preconditions
-        if (LoggedUser.getLoggedAccounts().stream().noneMatch(bankAccount ->
-                bankAccount.getAccountNumber().equals(payment.getGiverAccountNumber())))
+        if (loggedUser.getLoggedAccounts().stream()
+                      .noneMatch(bankAccount -> bankAccount.getAccountNumber()
+                                                           .equals(payment.getGiverAccountNumber())))
             throw new NotFoundException("Account Number does match not any client's accounts");
         if (payment.getGiverAccountNumber().equals(payment.getBeneficiaryAccountNumber()))
             throw new SameAccountException("Both legs of the transfer are the same");
-        if (bestMatchingBalance(payment).isEmpty())
-            throw new UnsufficientFundsException("InsufficientFunds ...");
-        if (Set.of("LUXX XX", "LUYY YY").contains(payment.getBeneficiaryAccountNumber())){
-            createBlacklistedPayment(payment);
+        if (bestMatchingBalance(payment).isEmpty()) throw new UnsufficientFundsException("InsufficientFunds ...");
+        if (Set.of("LUXX XX", "LUYY YY").contains(payment.getBeneficiaryAccountNumber())) {
+
+            executePaymentWithStatus(payment, getGiverAccount(payment).get(), PaymentStatus.BLOCKED);
+
             throw new BlockedPaymentException("Blocked Payment ...");
+
         }
-        return null;
+        Optional<Balance> optionalBalance = bestMatchingBalance(payment);
+        Optional<Balance> targetBalance = getTargetBalance(payment);
+        BigDecimal amount = payment.getAmount();
+        if (optionalBalance.isPresent()) {
+            Balance balance = optionalBalance.get();
+            debitAccount(balance, amount);
+            targetBalance.ifPresent(value -> creditAccount(value, amount));
+            return paymentMapper.toDto(executePaymentWithStatus(payment, balance.getBankAccount(), PaymentStatus.EXECUTED));
+        }
+
+        return payment;
     }
 
-    private void createBlacklistedPayment(PaymentDto paymentDto) {
-        //Payment payment = paymentMapper.paymentDtoToPayment(paymentDto);
-        Payment payment = Payment.builder().build();
-        payment.setPaymentStatus(PaymentStatus.BLOCKED);
-        paymentRepository.save(payment);
+    private Optional<Balance> getTargetBalance(PaymentDto payment) {
+        Optional<BankAccount> targetAccount = bankAccountService.getBankAccountByAccountNumber(payment.getBeneficiaryAccountNumber());
+        if (targetAccount.isPresent()) {
+            BankAccount acc = targetAccount.get();
+            Optional<Balance> matchingBalance = acc.getBalances().stream()
+                                                   .filter(balance -> Objects.equals(balance.getBalanceType(), BalanceType.AVAILABLE))
+                                                   .findFirst();
+            return Optional.ofNullable(matchingBalance.orElseGet(() -> balanceService.createEmptyBalance(Balance
+                    .builder().balanceType(BalanceType.AVAILABLE).amount(BigDecimal.ZERO)
+                    .currency(Currency.getInstance("EUR")).bankAccount(targetAccount.get()).build())));
+        }
+        return Optional.empty();
+    }
+
+    private void debitAccount(Balance sourceBalance, BigDecimal amount) {
+        sourceBalance.setAmount(sourceBalance.getAmount().subtract(amount));
+        balanceService.updateBalance(sourceBalance);
+    }
+
+    private void creditAccount(Balance targetBalance, BigDecimal amount) {
+        targetBalance.setAmount(targetBalance.getAmount().add(amount));
+        balanceService.updateBalance(targetBalance);
+    }
+
+    private Payment executePaymentWithStatus(PaymentDto paymentDto, BankAccount sourceAccount, PaymentStatus
+            paymentStatus) {
+        Payment payment = paymentMapper.paymentDtoToPayment(paymentDto, sourceAccount, paymentStatus);
+        payment.setPaymentStatus(paymentStatus);
+        return paymentRepository.save(payment);
     }
 
     private Optional<Balance> bestMatchingBalance(PaymentDto payment) {
-        Optional<BankAccount> giverAccount = LoggedUser.getLoggedAccounts().stream().filter(bankAccount -> bankAccount.getAccountNumber().equals(payment.getGiverAccountNumber())).findFirst();
-        Optional<Balance> bestMatchingBalance = giverAccount.get().getBalances().stream().filter(bal -> bal.getAmount().compareTo(payment.getAmount()) >= 0)
-                .filter(bal -> bal.getCurrency().equals(payment.getCurrency()))
-                .findFirst();
+        Optional<BankAccount> giverAccount = getGiverAccount(payment);
+        Optional<Balance> bestMatchingBalance = giverAccount.get().getBalances().stream()
+                                                            .filter(bal -> bal.getAmount()
+                                                                              .compareTo(payment.getAmount()) >= 0)
+                                                            .filter(bal -> bal.getCurrency()
+                                                                              .equals(payment.getCurrency()))
+                                                            .findFirst();
         // If no matching currency balance was found, return the first exceeding balance
         if (bestMatchingBalance.isEmpty()) {
             // Find the first balance that exceeds the payment amount
 
             // Return the first exceeding balance if found, otherwise return null
             return giverAccount.get().getBalances().stream()
-                    .filter(balance -> balance.getAmount().compareTo(payment.getAmount()) >= 0)
-                    .findFirst();
+                               .filter(balance -> balance.getAmount().compareTo(payment.getAmount()) >= 0)
+                               .findFirst();
         }
 
         // Return the best matching balance
@@ -78,11 +124,18 @@ public class PaymentServiceImpl implements PaymentService{
 
     }
 
+    private Optional<BankAccount> getGiverAccount(PaymentDto payment) {
+        return loggedUser.getLoggedAccounts().stream()
+                         .filter(bankAccount -> bankAccount.getAccountNumber()
+                                                           .equals(payment.getGiverAccountNumber()))
+                         .findFirst();
+    }
+
     @Override
     public Payment updatePayment(UUID id, Payment payment) {
         Payment existingPayment = paymentRepository.findById(id)
-                //todo change exception
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                                                   //todo change exception
+                                                   .orElseThrow(() -> new RuntimeException("Payment not found"));
         BeanUtils.copyProperties(payment, existingPayment);
         return paymentRepository.save(existingPayment);
     }
@@ -93,7 +146,18 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     @Override
-    public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+    public List<PaymentDto> getAllUserPayments(int page, int size) {
+        // Create Pageable object for pagination and sorting
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "creationDate"));
+
+        // Retrieve Page of payments for the user's bank accounts
+        Page<Payment> allByGiverAccountIn = paymentRepository.findAllByGiverAccountIn(loggedUser.getLoggedAccounts(), pageable);
+
+        // Convert Page of payments to List of PaymentDto
+
+        return allByGiverAccountIn.getContent().stream()
+                                  .map(paymentMapper::toDto)
+                                  .collect(Collectors.toList());
     }
 }

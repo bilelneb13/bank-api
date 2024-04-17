@@ -1,8 +1,6 @@
 package com.finologee.apifinologeebank.core.dto;
 
-import com.finologee.apifinologeebank.core.model.BankAccount;
-import com.finologee.apifinologeebank.core.model.PaymentStatus;
-import jakarta.persistence.*;
+import com.finologee.apifinologeebank.core.annotation.IbanChecker;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,7 +12,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -27,10 +24,17 @@ public class PaymentDto {
     @NotNull
     private Currency currency;
     @NotNull
+/*
+    @IbanChecker
+*/
     private String giverAccountNumber;
     @NotBlank
+/*
+    @IbanChecker
+*/
     private String beneficiaryAccountNumber;
     @NotBlank
     private String beneficiaryName;
     private String communication;
+    private LocalDateTime creationDate;
 }

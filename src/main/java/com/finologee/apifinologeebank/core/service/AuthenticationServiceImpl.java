@@ -20,7 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     public AuthenticationResponseDto getJwtTokensAfterAuthentication(Authentication authentication) {
         try
         {
-            var user = userRepository.findUserByUsername(authentication.getName())
+            var user = userRepository.findByUsername(authentication.getName())
                     .orElseThrow(()->{
                         log.error("[AuthService:userSignInAuth] User :{} not found",authentication.getName());
                         return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});

@@ -15,7 +15,7 @@ public class UserManagerConfig implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository
-                .findUserByUsername(username)
+                .findByUsername(username)
                 .map(UserConfig::new)
                 .orElseThrow(()-> new UsernameNotFoundException("Username : "+username+" does not exist"));
     }

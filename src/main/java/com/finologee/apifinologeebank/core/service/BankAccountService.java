@@ -4,10 +4,11 @@ import com.finologee.apifinologeebank.core.model.BankAccount;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface BankAccountService {
-    Optional<BankAccount> getBankAccountById(UUID id);
+    Optional<BankAccount> getBankAccountByAccountNumber(String accNumber);
 
     BankAccount createBankAccount(BankAccount bankAccount);
 
@@ -15,7 +16,5 @@ public interface BankAccountService {
 
     void deleteBankAccount(UUID id);
 
-    List<BankAccount> getAllBankAccounts();
-
-    List<BankAccount> getBankAccountsByUsername(String authenticatedUsername);
+    Set<BankAccount> getBankAccountsByUsername(String authenticatedUsername);
 }
