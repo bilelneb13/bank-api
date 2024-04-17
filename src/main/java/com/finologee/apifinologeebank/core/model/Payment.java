@@ -15,8 +15,8 @@ import java.util.UUID;
 @Entity
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private BigDecimal amount;
     private Currency currency;
     @ManyToOne

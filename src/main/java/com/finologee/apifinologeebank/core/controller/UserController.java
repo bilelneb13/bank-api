@@ -1,7 +1,9 @@
 package com.finologee.apifinologeebank.core.controller;
 
+import com.finologee.apifinologeebank.core.dto.UserInformationDto;
 import com.finologee.apifinologeebank.core.model.User;
 import com.finologee.apifinologeebank.core.service.UserService;
+import com.finologee.apifinologeebank.core.util.LoggedUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,10 +41,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user) {
-        User updatedUser = userService.updateUser(id, user);
-        return ResponseEntity.ok(updatedUser);
+    @PatchMapping
+    public ResponseEntity<?> patchUser(@RequestBody UserInformationDto user) {
+        userService.patchUser(user);
+        return ResponseEntity.ok("User Updated Successfully ...");
     }
 
     @DeleteMapping("/{id}")

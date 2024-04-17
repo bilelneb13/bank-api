@@ -1,5 +1,6 @@
 package com.finologee.apifinologeebank.core.service;
 
+import com.finologee.apifinologeebank.core.dto.UserInformationDto;
 import com.finologee.apifinologeebank.core.model.User;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ public interface UserService {
 
     User createUser(User user);
 
-    User updateUser(UUID id, User user);
+    User patchUser(UserInformationDto user);
 
     void deleteUser(UUID id);
 

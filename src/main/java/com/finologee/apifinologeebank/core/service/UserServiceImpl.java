@@ -1,12 +1,16 @@
 package com.finologee.apifinologeebank.core.service;
 
+import com.finologee.apifinologeebank.core.dto.UserInformationDto;
+import com.finologee.apifinologeebank.core.exception.NotFoundException;
 import com.finologee.apifinologeebank.core.model.User;
 import com.finologee.apifinologeebank.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Optional<User> getUserById(UUID id) {
@@ -26,13 +31,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UUID id, User user) {
-        User existingUser = userRepository.findById(id)
-                //todo change exception
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setAddress(user.getAddress());
+    public User patchUser(UserInformationDto user) {
+        User existingUser = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication()
+                                                                               .getName())
+                                          //todo change exception
+                                          .orElseThrow(() -> new NotFoundException("User not found"));
+        if (Objects.nonNull(user.getPassword()))
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (Objects.nonNull(user.getAddress()))
+            existingUser.setAddress(user.getAddress());
         return userRepository.save(existingUser);
     }
 

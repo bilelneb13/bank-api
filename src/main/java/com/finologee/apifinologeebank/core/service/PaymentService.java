@@ -1,8 +1,8 @@
 package com.finologee.apifinologeebank.core.service;
 
 import com.finologee.apifinologeebank.core.dto.PaymentDto;
-import com.finologee.apifinologeebank.core.model.BankAccount;
 import com.finologee.apifinologeebank.core.model.Payment;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ public interface PaymentService {
 
     Payment updatePayment(UUID id, Payment payment);
 
-    void deletePayment(UUID id);
+    ResponseEntity<?> deletePayment(UUID id);
 
     List<PaymentDto> getAllUserPayments(int page, int size);
 }

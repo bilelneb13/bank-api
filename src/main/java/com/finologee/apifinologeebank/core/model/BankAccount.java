@@ -16,8 +16,8 @@ import java.util.UUID;
 @Setter
 public class BankAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(unique = true)
     private String accountNumber;
     @ManyToMany(mappedBy = "bankAccounts")

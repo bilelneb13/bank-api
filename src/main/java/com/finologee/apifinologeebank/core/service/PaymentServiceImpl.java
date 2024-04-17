@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -141,8 +143,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void deletePayment(UUID id) {
+    public ResponseEntity<?> deletePayment(UUID id) {
+        // Retrieve authenticated user's username
+        Set<BankAccount> accounts = loggedUser.getLoggedAccounts();
+
+        // Check if the payment belongs to the authenticated user
+        if (!doesPaymentBelongToUser(id, accounts)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Payment Not found or don't have the to execute this operation");
+        }
+
+        // Delete the payment
         paymentRepository.deleteById(id);
+        return ResponseEntity.ok("Payment deleted successfully.");
+
+    }
+
+    private boolean doesPaymentBelongToUser(UUID id, Set<BankAccount> accounts) {
+        Optional<Payment> optionalPayment = paymentRepository.findById(id);
+        return optionalPayment.filter(payment -> accounts.contains(payment.getGiverAccount())).isPresent();
     }
 
     @Override

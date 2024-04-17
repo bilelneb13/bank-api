@@ -176,7 +176,17 @@ public class DataInitializer implements CommandLineRunner {
                                   .beneficiaryAccountNumber(account3.getAccountNumber())
                                   .giverAccount(account1)
                                   .build();
-        paymentRepository.saveAll(Arrays.asList(payment1, payment2, payment3, payment4, payment5, payment6, payment7));
+        Payment payment8 = Payment.builder()
+                                  .amount(new BigDecimal("10.00"))
+                                  .currency(Currency.getInstance("EUR"))
+                                  .beneficiaryName("Jane Doe")
+                                  .communication("Payment for goods")
+                                  .creationDate(LocalDateTime.now().minusMinutes(5))
+                                  .paymentStatus(PaymentStatus.EXECUTED)
+                                  .beneficiaryAccountNumber(account3.getAccountNumber())
+                                  .giverAccount(account5)
+                                  .build();
+        paymentRepository.saveAll(Arrays.asList(payment1, payment2, payment3, payment4, payment5, payment6, payment7, payment8));
     }
 
 }

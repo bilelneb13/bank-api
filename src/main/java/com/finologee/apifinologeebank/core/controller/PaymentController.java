@@ -53,8 +53,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable UUID id) {
-        paymentService.deletePayment(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deletePayment(@PathVariable UUID id) {
+        return paymentService.deletePayment(id);
     }
 }

@@ -18,17 +18,6 @@ import java.util.Set;
 public class LoggedUser {
     private final UserService userService;
 
-    public static String getAccountNumber() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-
-            if (principal instanceof User user) {
-                return user.getUsername();
-            }
-        }
-        throw new NotFoundException("Account number not found in Security Context.");
-    }
 
     public Set<BankAccount> getLoggedAccounts() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
