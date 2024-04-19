@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -149,7 +153,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         // Check if the payment belongs to the authenticated user
         if (!doesPaymentBelongToUser(id, accounts)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Payment Not found or don't have the to execute this operation");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                 .body("Payment Not found or don't have the to execute this operation");
         }
 
         // Delete the payment
@@ -175,6 +180,27 @@ public class PaymentServiceImpl implements PaymentService {
         // Convert Page of payments to List of PaymentDto
 
         return allByGiverAccountIn.getContent().stream()
+                                  .map(paymentMapper::toDto)
+                                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PaymentDto> getAllUserPaymentsByBeneficiaryAndPeriod(String accountNumber, String startDate,
+                                                                     String endDate, int page,
+                                                                     int size) {
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        // Create Pageable object for pagination and sorting
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "creationDate"));
+
+        // Retrieve Page of payments for the user's bank accounts
+        Page<Payment> allBeneficiaryAccountBetween = paymentRepository.findAllByBeneficiaryAccountNumberAndCreationDateIsBetween(
+                accountNumber, startLocalDate.atStartOfDay(), endLocalDate.atTime(LocalTime.MAX), pageable);
+
+        // Convert Page of payments to List of PaymentDto
+
+        return allBeneficiaryAccountBetween.getContent().stream()
                                   .map(paymentMapper::toDto)
                                   .collect(Collectors.toList());
     }

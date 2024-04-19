@@ -4,6 +4,7 @@ import com.finologee.apifinologeebank.core.dto.PaymentDto;
 import com.finologee.apifinologeebank.core.model.Payment;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,4 +19,6 @@ public interface PaymentService {
     ResponseEntity<?> deletePayment(UUID id);
 
     List<PaymentDto> getAllUserPayments(int page, int size);
+
+    List<PaymentDto> getAllUserPaymentsByBeneficiaryAndPeriod(String accountNumber, String startDate, String endDate, int page, int size);
 }
