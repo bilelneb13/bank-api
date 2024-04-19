@@ -54,23 +54,9 @@ public class PaymentControllerTests {
 
     @MockBean
     private PaymentService paymentService;
-    /*    private PaymentDtoGenerator paymentDtoGenerator;
-        @MockBean
-        private AuthenticationService authenticationService;
-        @MockBean
-        private BankAccountService bankAccountService;
-        @MockBean
-        private UserService userService;
-        @MockBean
-        private BankAccountController bankAccountController;
-        @MockBean
-        private LoggedUser loggedUser;*/
+
     @MockBean
     private PaymentController paymentController;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private JwtTokenGenerator jwtTokenGenerator;
     @Mock
     private SecurityConfig securityConfig;
     @MockBean
@@ -84,37 +70,6 @@ public class PaymentControllerTests {
         }
     }
 
-    /*    @Test
-        void testGetJwtTokensAfterAuthentication() {
-            // Create a mock Authentication object
-            UserDetails userDetails =  org.springframework.security.core.userdetails.User
-                    .withUsername("user1").password("1234").build();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null);
-
-            // Mock the behavior of userRepository.findByUsername()
-            when(userRepository.findByUsername("user1")).thenReturn(Optional.of(User.builder().username("user1").password("1234").build()));
-
-            // Mock the behavior of jwtTokenGenerator.generateToken()
-            String fakeAccessToken = "fake-access-token";
-            when(jwtTokenGenerator.generateToken(authentication)).thenReturn(fakeAccessToken);
-
-            // Call the method under test
-            AuthenticationResponseDto responseDto = (AuthenticationResponseDto) authService.getJwtTokensAfterAuthentication(authentication);
-
-            // Verify the response
-            assertEquals("fake-access-token", responseDto.getAccessToken());
-            assertEquals("testUser", responseDto.getUserName());
-            assertEquals(OAuth2AccessToken.TokenType.BEARER, responseDto.getTokenType());
-            // Add more assertions as needed
-        }*/
-/*    @Test
-    public void givenWac_whenServletContext_thenItProvidesGreetController() {
-        ServletContext servletContext = context.getServletContext();
-
-        assertNotNull(servletContext);
-        assertTrue(servletContext instanceof MockServletContext);
-        assertNotNull(context.getBean("paymentController"));
-    }*/
 
     @BeforeEach
     public void setup() {
@@ -140,7 +95,6 @@ public class PaymentControllerTests {
     public void testGetAllUserPaymentsByCriteria() throws Exception {
         // Mocked data
         List<PaymentDto> mockPayments = new ArrayList<>(PaymentDtoGenerator.generateRandomPayments(10, "ACC1"));
-        // Add mock payments to the list...
 
         // Mock service method
         when(paymentService.getAllUserPaymentsByBeneficiaryAndPeriod(anyString(), any(String.class), any(String.class), anyInt(), anyInt())).thenReturn(mockPayments);
@@ -151,8 +105,7 @@ public class PaymentControllerTests {
                                                                                .param("page", "0").param("size", "5")
            )
            .andDo(MockMvcResultHandlers.print()).andExpect(status().isOk());
-        // You can add more assertions to verify the response content if needed
-        // For example, to verify the size of the returned list:
+
     }
 
     @Test

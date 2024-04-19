@@ -29,7 +29,7 @@ public class BankAccountController {
     }
 
 
-    @PostMapping
+/*    @PostMapping
     public ResponseEntity<BankAccount> createBankAccount(@RequestBody BankAccount bankAccount) {
         BankAccount createdAccount = bankAccountService.createBankAccount(bankAccount);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
@@ -45,5 +45,5 @@ public class BankAccountController {
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         bankAccountService.deleteBankAccount(id);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 }

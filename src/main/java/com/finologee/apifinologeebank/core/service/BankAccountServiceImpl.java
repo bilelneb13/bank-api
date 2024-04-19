@@ -23,25 +23,25 @@ public class BankAccountServiceImpl implements BankAccountService {
     public Optional<BankAccount> getBankAccountByAccountNumber(String accNumber) {
         return bankAccountRepository.findByAccountNumber(accNumber);
     }
-
+/*
     @Override
     public BankAccount createBankAccount(BankAccount bankAccount) {
         return bankAccountRepository.save(bankAccount);
-    }
+    }*/
 
-    @Override
+/*    @Override
     public BankAccount updateBankAccount(UUID id, BankAccount bankAccount) {
         BankAccount existingBankAccount = bankAccountRepository.findById(id)
                                                                //todo change exception
                                                                .orElseThrow(() -> new RuntimeException("BankAccount not found"));
         BeanUtils.copyProperties(bankAccount, existingBankAccount);
         return bankAccountRepository.save(existingBankAccount);
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void deleteBankAccount(UUID id) {
         bankAccountRepository.deleteById(id);
-    }
+    }*/
 
 /*    @Override
     public Set<BankAccount> getAllBankAccounts() {

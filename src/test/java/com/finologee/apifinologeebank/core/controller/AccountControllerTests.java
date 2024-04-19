@@ -57,21 +57,9 @@ public class AccountControllerTests {
     @MockBean
     private BankAccountController accountController;
     @Mock
-    private UserRepository userRepository;
-    @Mock
-    private JwtTokenGenerator jwtTokenGenerator;
-    @Mock
     private SecurityConfig securityConfig;
     @MockBean
     private UserManagerConfig userManagerConfig;
-
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     @BeforeEach
@@ -97,8 +85,7 @@ public class AccountControllerTests {
         // Perform GET request and verify status code and response content
         mvc.perform(get("/api/v1/accounts"))
            .andDo(MockMvcResultHandlers.print()).andExpect(status().isOk());
-        // You can add more assertions to verify the response content if needed
-        // For example, to verify the size of the returned list:
+
     }
 
 }

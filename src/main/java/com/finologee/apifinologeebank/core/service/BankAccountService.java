@@ -10,11 +10,13 @@ import java.util.UUID;
 public interface BankAccountService {
     Optional<BankAccount> getBankAccountByAccountNumber(String accNumber);
 
-    BankAccount createBankAccount(BankAccount bankAccount);
+/*    BankAccount createBankAccount(BankAccount bankAccount);
 
-    BankAccount updateBankAccount(UUID id, BankAccount bankAccount);
+    BankAccount updateBankAccount(UUID id, BankAccount bankAccount);*/
 
+/*
     void deleteBankAccount(UUID id);
+*/
 
     Set<BankAccount> getBankAccountsByUsername(String authenticatedUsername);
 }
