@@ -45,7 +45,7 @@ public class SecurityConfig {
     private final CustomLogoutHandler logoutHandler;
     private final TokenUtils tokenUtils;
     private final String jwtKey = "9faa372517ac1d389758d3750fc07acf00f542277f26fec1ce4593e93f64e338";
-
+    // Security config to configure endpoints security and properties for the request
     @Order(1)
     @Bean
     public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {

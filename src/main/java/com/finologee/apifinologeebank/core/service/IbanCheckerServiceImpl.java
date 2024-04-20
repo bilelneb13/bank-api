@@ -28,10 +28,8 @@ public class IbanCheckerServiceImpl implements IbanCheckerService {
         headers.set("accept", "application/json");
         headers.set("X-Api-Key", apiKey);
 
-        // Add headers to the HTTP request
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
-        // Make the HTTP request with headers
         ResponseEntity<IBANDto> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.GET,
@@ -39,7 +37,6 @@ public class IbanCheckerServiceImpl implements IbanCheckerService {
                 IBANDto.class
         );
 
-        // Process the response
         IBANDto responseBody = response.getBody();
         return Objects.requireNonNull(responseBody).isValid();
     }

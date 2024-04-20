@@ -24,14 +24,10 @@ public class PaymentDto {
     @NotNull
     private Currency currency;
     @NotNull
-/*
     @IbanChecker
-*/
     private String giverAccountNumber;
     @NotBlank
-/*
     @IbanChecker
-*/
     private String beneficiaryAccountNumber;
     @NotBlank
     private String beneficiaryName;

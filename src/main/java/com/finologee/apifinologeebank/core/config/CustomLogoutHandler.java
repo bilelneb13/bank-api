@@ -15,7 +15,8 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
 
-
+    // This method to invalidate the jwt token and save the logged out flag in the DB
+    //
     @Override
     public void logout(HttpServletRequest request,
                        HttpServletResponse response,

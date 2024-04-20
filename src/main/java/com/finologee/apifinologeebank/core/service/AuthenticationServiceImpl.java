@@ -27,7 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         {
             var user = userRepository.findByUsername(authentication.getName())
                     .orElseThrow(()->{
-                        log.error("[AuthService:userSignInAuth] User :{} not found",authentication.getName());
+                        log.error("User :{} not found",authentication.getName());
                         return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
 
 
@@ -35,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
             saveUserToken(accessToken, user);
 
-            log.info("[AuthService:userSignInAuth] Access token for user:{}, has been generated",user.getUsername());
+            log.info("Access token for user:{}, has been generated",user.getUsername());
             return  AuthenticationResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -45,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
 
         }catch (Exception e){
-            log.error("[AuthenticationService:userSignInAuth]Exception while authenticating the user due to :"+e.getMessage());
+            log.error("Exception while authenticating the user due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please Try Again");
         }
     }

@@ -29,7 +29,7 @@ public class JwtTokenGenerator {
     private final JwtEncoder encoder;
     private final JwtDecoder decoder;
 
-    public String generateAccessToken(Authentication authentication) {
+/*    public String generateAccessToken(Authentication authentication) {
 
         log.info("[JwtTokenGenerator:generateAccessToken] Token Creation Started for:{}", authentication.getName());
 
@@ -41,7 +41,7 @@ public class JwtTokenGenerator {
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
 
-    }
+    }*/
 
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();

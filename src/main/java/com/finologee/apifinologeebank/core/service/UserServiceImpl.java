@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
     public User patchUser(UserInformationDto user) {
         User existingUser = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication()
                                                                                .getName())
-                                          //todo change exception
                                           .orElseThrow(() -> new NotFoundException("User not found"));
         if (Objects.nonNull(user.getPassword()))
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));

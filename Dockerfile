@@ -18,3 +18,4 @@ EXPOSE 8080
 
 # Specify the command to run your Spring Boot application
 CMD ["java", "-jar", "api-finologee-bank-1.0.0.jar"]
+

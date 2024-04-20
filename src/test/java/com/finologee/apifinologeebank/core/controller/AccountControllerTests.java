@@ -2,9 +2,11 @@ package com.finologee.apifinologeebank.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finologee.apifinologeebank.core.config.AppConfig;
+import com.finologee.apifinologeebank.core.config.CustomLogoutHandler;
 import com.finologee.apifinologeebank.core.config.SecurityConfig;
 import com.finologee.apifinologeebank.core.config.UserManagerConfig;
 import com.finologee.apifinologeebank.core.jwt.JwtTokenGenerator;
+import com.finologee.apifinologeebank.core.jwt.TokenUtils;
 import com.finologee.apifinologeebank.core.model.Balance;
 import com.finologee.apifinologeebank.core.model.BalanceType;
 import com.finologee.apifinologeebank.core.model.BankAccount;
@@ -60,6 +62,10 @@ public class AccountControllerTests {
     private SecurityConfig securityConfig;
     @MockBean
     private UserManagerConfig userManagerConfig;
+    @MockBean
+    private CustomLogoutHandler customLogoutHandler;
+    @MockBean
+    private TokenUtils tokenUtils;
 
 
     @BeforeEach

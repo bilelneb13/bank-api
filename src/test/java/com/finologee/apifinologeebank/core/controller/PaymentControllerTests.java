@@ -2,10 +2,12 @@ package com.finologee.apifinologeebank.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finologee.apifinologeebank.core.config.AppConfig;
+import com.finologee.apifinologeebank.core.config.CustomLogoutHandler;
 import com.finologee.apifinologeebank.core.config.SecurityConfig;
 import com.finologee.apifinologeebank.core.config.UserManagerConfig;
 import com.finologee.apifinologeebank.core.dto.PaymentDto;
 import com.finologee.apifinologeebank.core.jwt.JwtTokenGenerator;
+import com.finologee.apifinologeebank.core.jwt.TokenUtils;
 import com.finologee.apifinologeebank.core.repository.UserRepository;
 import com.finologee.apifinologeebank.core.service.PaymentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +63,10 @@ public class PaymentControllerTests {
     private SecurityConfig securityConfig;
     @MockBean
     private UserManagerConfig userManagerConfig;
+    @MockBean
+    private CustomLogoutHandler customLogoutHandler;
+    @MockBean
+    private TokenUtils tokenUtils;
 
     public static String asJsonString(final Object obj) {
         try {

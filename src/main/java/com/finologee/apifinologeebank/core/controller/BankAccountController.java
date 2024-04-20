@@ -18,7 +18,6 @@ import java.util.UUID;
 public class BankAccountController {
 
     private final BankAccountService bankAccountService;
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<Set<BankAccount>> getAllBankAccounts() {
@@ -27,23 +26,4 @@ public class BankAccountController {
         Set<BankAccount> accounts = bankAccountService.getBankAccountsByUsername(authenticatedUsername);
         return ResponseEntity.ok(accounts);
     }
-
-
-/*    @PostMapping
-    public ResponseEntity<BankAccount> createBankAccount(@RequestBody BankAccount bankAccount) {
-        BankAccount createdAccount = bankAccountService.createBankAccount(bankAccount);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<BankAccount> updateBankAccount(@PathVariable UUID id, @RequestBody BankAccount bankAccount) {
-        BankAccount updatedBankAccount = bankAccountService.updateBankAccount(id, bankAccount);
-        return ResponseEntity.ok(updatedBankAccount);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
-        bankAccountService.deleteBankAccount(id);
-        return ResponseEntity.noContent().build();
-    }*/
 }
