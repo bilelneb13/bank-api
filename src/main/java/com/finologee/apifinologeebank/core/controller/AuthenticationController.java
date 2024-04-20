@@ -22,9 +22,4 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(authenticationService.getJwtTokensAfterAuthentication(authentication));
     }
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(Authentication authentication){
-
-        return ResponseEntity.ok("Ok");
-    }
 }
